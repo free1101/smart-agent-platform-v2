@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Agent Platform · 智能客服演示台</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --bg-soft: #1e293b;
+    --card: #ffffff;
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --accent: #22d3ee;
+    --text: #0f172a;
+    --text-soft: #64748b;
+    --ok: #10b981;
+    --warn: #f59e0b;
+    --err: #ef4444;
+    --radius: 14px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+    color: #e2e8f0;
+    min-height: 100vh;
+  }
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 32px;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    position: sticky; top: 0; z-index: 10;
+  }
+  header h1 { font-size: 20px; font-weight: 700; }
+  header h1 span { color: var(--accent); }
+  .badge {
+    padding: 4px 14px; border-radius: 999px; font-size: 12px;
+    background: rgba(34, 211, 238, 0.15); color: var(--accent);
+    border: 1px solid rgba(34, 211, 238, 0.3);
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px 32px; }
+  .tabs {
+    display: flex; gap: 8px; margin-bottom: 20px;
+    background: rgba(255,255,255,0.06);
+    padding: 6px; border-radius: 12px; width: fit-content;
+  }
+  .tab {
+    padding: 8px 22px; border-radius: 8px; cursor: pointer;
+    font-size: 14px; color: #94a3b8; transition: all .2s;
+    border: none; background: transparent;
+  }
+  .tab.active { background: var(--primary); color: #fff; }
+  .tab:hover:not(.active) { color: #fff; }
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: none;} }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 20px;
+    backdrop-filter: blur(8px);
+  }
+  .card h3 { font-size: 15px; margin-bottom: 14px; color: #f1f5f9; }
+  .card h3 small { color: var(--text-soft); font-weight: 400; margin-left: 8px; }
+
+  /* 对话区 */
+  .chat-box {
+    height: 420px; overflow-y: auto; padding: 8px 4px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .msg { max-width: 85%; padding: 12px 16px; border-radius: 14px; font-size: 14px; line-height: 1.7; white-space: pre-wrap; }
+  .msg.user { align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
+  .msg.bot { align-self: flex-start; background: rgba(255,255,255,0.1); border-bottom-left-radius: 4px; }
+  .msg .meta { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 6px; }
+  .msg .intent-tag {
+    display: inline-block; padding: 2px 10px; border-radius: 999px;
+    font-size: 11px; background: rgba(34,211,238,0.2); color: var(--accent);
+    margin-right: 8px;
+  }
+  .chat-input { display: flex; gap: 10px; margin-top: 14px; }
+  .chat-input input {
+    flex: 1; padding: 12px 16px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.08); color: #fff; font-size: 14px;
+    outline: none; transition: border .2s;
+  }
+  .chat-input input:focus { border-color: var(--primary); }
+  .btn {
+    padding: 12px 22px; border: none; border-radius: 10px; cursor: pointer;
+    font-size: 14px; font-weight: 600; transition: all .2s;
+  }
+  .btn.primary { background: var(--primary); color: #fff; }
+  .btn.primary:hover { background: var(--primary-dark); }
+  .btn.ghost { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+  .btn.ghost:hover { background: rgba(255,255,255,0.2); }
+
+  /* 快捷问题 */
+  .quick { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .quick button {
+    padding: 6px 14px; border-radius: 999px; font-size: 12px;
+    background: rgba(99,102,241,0.15); color: #c7d2fe;
+    border: 1px solid rgba(99,102,241,0.3); cursor: pointer; transition: all .2s;
+  }
+  .quick button:hover { background: rgba(99,102,241,0.3); }
+
+  /* 统计卡片 */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 20px; }
+  .stat {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius); padding: 16px; text-align: center;
+  }
+  .stat .num { font-size: 28px; font-weight: 800; color: var(--accent); }
+  .stat .label { font-size: 12px; color: var(--text-soft); margin-top: 4px; }
+
+  /* 表格 */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  th { color: #94a3b8; font-weight: 600; }
+  tr:hover td { background: rgba(255,255,255,0.04); }
+  .tag {
+    display: inline-block; padding: 2px 10px; border-radius: 999px;
+    font-size: 11px; background: rgba(34,211,238,0.15); color: var(--accent);
+  }
+  .tag.ok { background: rgba(16,185,129,0.15); color: var(--ok); }
+  .tag.err { background: rgba(239,68,68,0.15); color: var(--err); }
+  .tag.warn { background: rgba(245,158,11,0.15); color: var(--warn); }
+
+  .muted { color: var(--text-soft); font-size: 13px; }
+  .code { font-family: Consolas, monospace; font-size: 12px; }
+  .scroll { max-height: 320px; overflow-y: auto; }
+  .loading { opacity: .6; pointer-events: none; }
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Smart Agent <span>Platform</span></h1>
+  <div>
+    <span class="badge" id="llm-badge">检测中...</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="tabs">
+    <button class="tab active" data-tab="chat">对话测试</button>
+    <button class="tab" data-tab="kb">知识库</button>
+    <button class="tab" data-tab="eval">评测看板</button>
+  </div>
+
+  <!-- ==================== 对话 ==================== -->
+  <div class="panel active" id="panel-chat">
+    <div class="grid-2">
+      <div class="card">
+        <h3>智能客服对话 <small>LangGraph 多 Agent 图驱动</small></h3>
+        <div style="margin-bottom:10px; display:flex; align-items:center; gap:12px;">
+          <label class="muted" style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="checkbox" id="stream-toggle" checked onchange="streamEnabled=this.checked"> 流式输出(打字机)
+          </label>
+          <span class="muted" id="node-track" style="font-size:12px;"></span>
+        </div>
+        <div class="chat-box" id="chat-box">
+          <div class="msg bot">你好!我是智能客服助手,可以回答营业信息、服务价格、预约政策等问题,也可以帮你预约服务。试试下面的快捷问题吧 👇</div>
+        </div>
+        <div class="chat-input">
+          <input id="chat-input" placeholder="输入你的问题,如:帮我预约明天下午3点的肩颈推拿" onkeydown="if(event.key==='Enter')sendChat()">
+          <button class="btn primary" onclick="sendChat()">发送</button>
+        </div>
+        <div class="quick" id="quick-list"></div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:20px;">
+          <h3>请求详情 <small>本次对话的 Agent 状态</small></h3>
+          <div id="debug-info" class="code muted">等待对话...</div>
+        </div>
+        <div class="card">
+          <h3>最近工单 <small>业务 Agent 创建的预约</small></h3>
+          <div id="tickets" class="code muted">暂无工单</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 知识库 ==================== -->
+  <div class="panel" id="panel-kb">
+    <div class="stats-row" id="kb-stats"></div>
+    <div class="card">
+      <h3>知识文档 <small>当前租户的知识条目(混合检索索引)</small></h3>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>ID</th><th>分类</th><th>内容</th><th>关键词</th><th>来源</th></tr></thead>
+          <tbody id="kb-docs"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 评测 ==================== -->
+  <div class="panel" id="panel-eval">
+    <div class="card" style="margin-bottom:20px;">
+      <h3>RAG 检索命中率评测 <small>基于 eval_dataset.json,验证混合检索效果</small></h3>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <button class="btn primary" id="eval-btn" onclick="runEval()">运行评测</button>
+        <span class="muted" id="eval-status"></span>
+      </div>
+    </div>
+    <div id="eval-result"></div>
+  </div>
+
+</div>
+
+<script>
+const API = "";
+let tenants = [];
+let currentTenantId = 1;
+// 页面级会话 id:一次加载生成一个,同页面多轮对话共享(配合后端多轮记忆)
+const webSessionId = "web-" + Date.now();
+// 持久化用户标识:存在浏览器 localStorage,刷新页面/换会话都不变。
+// 这是"跨会话长期记忆"的用户维度(等价于真实系统里的手机号/账号)。
+let webUserKey = localStorage.getItem("agent_user_key");
+if (!webUserKey) {
+  webUserKey = "user-" + Math.random().toString(36).slice(2, 10);
+  localStorage.setItem("agent_user_key", webUserKey);
+}
+// 流式开关:true = SSE 打字机(默认), false = 整段返回
+let streamEnabled = true;
+// 当前是否正在生成回复(避免并发发送)
+let generating = false;
+
+// ---------- 初始化 ----------
+async function init() {
+  try {
+    const [tResp, hResp] = await Promise.all([
+      fetch(`${API}/api/tenants`),
+      fetch(`${API}/api/health`)
+    ]);
+    const tData = await tResp.json();
+    const hData = await hResp.json();
+    tenants = tData;
+    if (tenants.length) currentTenantId = tenants[0].id;
+    document.getElementById("llm-badge").textContent =
+      hData.llm === "configured" ? "LLM: API 模式" : "LLM: 未配置 API Key";
+    loadQuick();
+    loadKbStats();
+    loadKbDocs();
+    loadTickets();
+  } catch (e) {
+    document.getElementById("llm-badge").textContent = "后端未连接";
+    console.error(e);
+  }
+}
+
+// ---------- Tabs ----------
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
+  document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach(x => x.classList.remove("active"));
+  t.classList.add("active");
+  document.getElementById(`panel-${t.dataset.tab}`).classList.add("active");
+  if (t.dataset.tab === "kb") { loadKbStats(); loadKbDocs(); }
+}));
+
+// ---------- 对话 ----------
+const QUICK = [
+  "你们几点开门几点关门?",
+  "全身推拿多少钱?",
+  "技师都有几年经验?",
+  "帮我预约明天下午3点的肩颈推拿,我叫张三",
+  "迟到了会怎样?",
+  "我要找人工客服投诉",
+];
+
+function loadQuick() {
+  const box = document.getElementById("quick-list");
+  box.innerHTML = "";
+  QUICK.forEach(q => {
+    const b = document.createElement("button");
+    b.textContent = q;
+    b.onclick = () => { document.getElementById("chat-input").value = q; sendChat(); };
+    box.appendChild(b);
+  });
+}
+
+function addMsg(role, text, meta) {
+  const box = document.getElementById("chat-box");
+  const div = document.createElement("div");
+  div.className = `msg ${role}`;
+  if (meta) div.innerHTML = `<span class="intent-tag">${meta.intent}</span>`;
+  const textEl = document.createElement("span");
+  textEl.className = "text";
+  textEl.textContent = text;
+  div.appendChild(textEl);
+  if (meta) {
+    const m = document.createElement("div");
+    m.className = "meta";
+    m.textContent = meta.extra || "";
+    div.appendChild(m);
+  }
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+  return div;
+}
+
+// 给 bot 消息补 meta(意图/来源)展示,流式与整段共用
+function finishBotMsg(botEl, data) {
+  if (!botEl || !data) return;
+  let meta = botEl.querySelector(".meta");
+  if (!meta) {
+    meta = document.createElement("div");
+    meta.className = "meta";
+    botEl.appendChild(meta);
+  }
+  meta.textContent = `意图: ${data.intent}${data.intent_reason ? "(" + data.intent_reason + ")" : ""}  |  来源: ${(data.sources || []).join(", ") || "无"}`;
+}
+
+async function sendChat() {
+  if (generating) return;               // 上一轮还没结束,忽略重复点击
+  const input = document.getElementById("chat-input");
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = "";
+  addMsg("user", text);
+  document.getElementById("debug-info").textContent = "思考中...";
+  const nodeTrack = document.getElementById("node-track");
+  const payload = { message: text, session_id: webSessionId, tenant_id: currentTenantId, user_key: webUserKey };
+
+  // ===== 流式模式(默认):SSE 打字机 + 节点进度 =====
+  if (streamEnabled) {
+    generating = true;
+    try {
+      const resp = await fetch(`${API}/api/chat/stream`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(err.detail || resp.status);
+      }
+      const botEl = addMsg("bot", "");
+      const streamText = botEl.querySelector(".text");
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let doneData = null;
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        // SSE 事件以空行分隔,逐条解析
+        const events = buffer.split("\n\n");
+        buffer = events.pop() || "";
+        for (const block of events) {
+          let ev = "";
+          let data = "";
+          for (const line of block.split("\n")) {
+            if (line.startsWith("event:")) ev = line.slice(6).trim();
+            else if (line.startsWith("data:")) data += line.slice(5).trim();
+          }
+          if (!data) continue;
+          let j;
+          try {
+            j = JSON.parse(data);
+          } catch (e) {
+            continue;  // 跳过无法解析的片段
+          }
+          if (ev === "node") {
+            nodeTrack.textContent = `▶ 正在处理: ${j.node} ...`;
+          } else if (ev === "delta") {
+            streamText.textContent += j.text;   // 打字机追加
+            botEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          } else if (ev === "done") {
+            doneData = j;
+          } else if (ev === "error") {
+            throw new Error(j.message);
+          }
+        }
+      }
+      if (!doneData) throw new Error("流意外中断");
+      nodeTrack.textContent = "";
+      finishBotMsg(botEl, doneData);
+      document.getElementById("debug-info").textContent = JSON.stringify(doneData, null, 2);
+      if (doneData.booking) loadTickets();
+    } catch (e) {
+      nodeTrack.textContent = "";
+      addMsg("bot", "出错了: " + e.message);
+      document.getElementById("debug-info").textContent = "ERROR: " + e.message;
+    } finally {
+      generating = false;
+    }
+    return;
+  }
+
+  // ===== 整段模式:一次性返回 =====
+  try {
+    const resp = await fetch(`${API}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || resp.status);
+    const botEl = addMsg("bot", data.reply, {
+      intent: data.intent,
+      extra: `意图: ${data.intent}${data.intent_reason ? "(" + data.intent_reason + ")" : ""}  |  来源: ${data.sources.join(", ") || "无"}`
+    });
+    finishBotMsg(botEl, data);
+    document.getElementById("debug-info").textContent = JSON.stringify(data, null, 2);
+    if (data.booking) loadTickets();
+  } catch (e) {
+    addMsg("bot", "出错了: " + e.message);
+    document.getElementById("debug-info").textContent = "ERROR: " + e.message;
+  }
+}
+
+// ---------- 知识库 ----------
+async function loadKbStats() {
+  try {
+    const r = await fetch(`${API}/api/kb/stats?tenant_id=${currentTenantId}`);
+    const data = await r.json();
+    const cats = Object.entries(data.by_category).map(([k, v]) => `<div class="stat"><div class="num">${v}</div><div class="label">${k}</div></div>`).join("");
+    document.getElementById("kb-stats").innerHTML =
+      `<div class="stat"><div class="num">${data.total_docs}</div><div class="label">知识条目</div></div>` + cats;
+  } catch (e) { console.error(e); }
+}
+
+async function loadKbDocs() {
+  try {
+    const r = await fetch(`${API}/api/kb/docs?tenant_id=${currentTenantId}&limit=30`);
+    const data = await r.json();
+    document.getElementById("kb-docs").innerHTML = data.docs.map(d => `
+      <tr>
+        <td class="code">${d.id}</td>
+        <td><span class="tag">${d.category}</span></td>
+        <td>${d.content.substring(0, 80)}${d.content.length > 80 ? "..." : ""}</td>
+        <td class="muted">${(d.keywords || []).slice(0, 4).join(", ")}</td>
+        <td class="muted">${d.source}</td>
+      </tr>`).join("") || `<tr><td colspan="5" class="muted">暂无知识</td></tr>`;
+  } catch (e) { console.error(e); }
+}
+
+// ---------- 工单 ----------
+async function loadTickets() {
+  try {
+    const r = await fetch(`${API}/api/chat/tickets`);
+    if (!r.ok) return;
+    const data = await r.json();
+    document.getElementById("tickets").textContent = data.length ? JSON.stringify(data.slice(0, 5), null, 2) : "暂无工单";
+  } catch (e) { /* 端点未实现时静默 */ }
+}
+
+// ---------- 评测 ----------
+async function runEval() {
+  const btn = document.getElementById("eval-btn");
+  const status = document.getElementById("eval-status");
+  btn.classList.add("loading");
+  status.textContent = "评测运行中(约几秒)...";
+  document.getElementById("eval-result").innerHTML = "";
+  try {
+    const r = await fetch(`${API}/api/eval/run`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tenant_id: currentTenantId, top_k: 3 })
+    });
+    const data = await r.json();
+    status.textContent = "";
+    renderEval(data);
+  } catch (e) {
+    status.textContent = "评测失败: " + e.message;
+  } finally {
+    btn.classList.remove("loading");
+  }
+}
+
+function renderEval(data) {
+  const fmt = (v) => (v * 100).toFixed(1) + "%";
+  const el = document.getElementById("eval-result");
+  const rows = (data.results || []).map((r, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${r.query}</td>
+      <td><span class="tag">${r.expected_category}</span></td>
+      <td>${r.top1_category ? `<span class="tag ${r.top1_hit ? "ok" : "err"}">${r.top1_category}</span>` : "-"}</td>
+      <td>${r.top3_hit ? '<span class="tag ok">命中</span>' : '<span class="tag err">未命中</span>'}</td>
+    </tr>`).join("");
+  el.innerHTML = `
+    <div class="stats-row">
+      <div class="stat"><div class="num">${data.total}</div><div class="label">评测样本</div></div>
+      <div class="stat"><div class="num">${fmt(data.top1_accuracy)}</div><div class="label">Top-1 命中率</div></div>
+      <div class="stat"><div class="num">${fmt(data.top3_accuracy)}</div><div class="label">Top-3 命中率</div></div>
+    </div>
+    <div class="card">
+      <h3>逐条结果 <small>期望分类 vs 实际 Top-1 分类</small></h3>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>#</th><th>问题</th><th>期望分类</th><th>Top-1</th><th>Top-3</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+# 三服务编排:API / MCP 工具服务 / Streamlit 控制台
+# 共享 ./data 卷:SQLite、Chroma 索引、上传文件都落在这里。
+services:
+  app:
+    build: .
+    container_name: sap-app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      MCP_SERVER_URL: http://mcp:9000/mcp
+      ALLOW_UNAUTHENTICATED: "${ALLOW_UNAUTHENTICATED:-false}"
+    volumes:
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+  mcp:
+    build: .
+    container_name: sap-mcp
+    command: ["python", "-m", "app.mcp.tools"]
+    environment:
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: "9000"
+    env_file:
+      - .env
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - app
+    restart: unless-stopped
+
+  dashboard:
+    build: .
+    container_name: sap-dashboard
+    command:
+      - streamlit
+      - run
+      - dashboard/app.py
+      - --server.address=0.0.0.0
+      - --server.port=8501
+      - --server.headless=true
+    env_file:
+      - .env
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - app
+    restart: unless-stopped

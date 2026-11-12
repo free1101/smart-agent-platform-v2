@@ -1,0 +1,228 @@
+[
+  {
+    "query": "你们几点开门几点关门？",
+    "expected_category": "营业时间",
+    "expected_keywords": ["上午9点", "晚上10点", "全年无休"],
+    "expected_answer": "我们的营业时间是每天上午9点到晚上10点，全年无休，节假日正常营业。"
+  },
+  {
+    "query": "周末营业吗？",
+    "expected_category": "营业时间",
+    "expected_keywords": ["周末", "正常营业"],
+    "expected_answer": "周末和法定节假日正常营业，营业时间不变，仍是上午9点到晚上10点。"
+  },
+  {
+    "query": "你们店在哪里？怎么过去方便？",
+    "expected_category": "门店信息",
+    "expected_keywords": ["中关村大街27号", "地铁2号线A口"],
+    "expected_answer": "门店位于北京市海淀区中关村大街27号，地铁2号线A口向北步行100米即可到达。"
+  },
+  {
+    "query": "开车去你们那好停车吗？",
+    "expected_category": "门店信息",
+    "expected_keywords": ["停车", "8元每小时"],
+    "expected_answer": "门店门口有收费停车场，停车费每小时8元，建议错峰到店以免车位紧张。"
+  },
+  {
+    "query": "全身推拿多少钱？",
+    "expected_category": "服务项目",
+    "expected_keywords": ["120元", "60分钟"],
+    "expected_answer": "全身推拿120元/60分钟。"
+  },
+  {
+    "query": "你们都有哪些服务项目？价格是多少？",
+    "expected_category": "服务项目",
+    "expected_keywords": ["全身推拿", "肩颈推拿", "足底按摩", "背部推拿"],
+    "expected_answer": "提供全身推拿（120元/60分钟）、肩颈推拿（80元/30分钟）、足底按摩（100元/45分钟）、背部推拿（90元/40分钟）等。"
+  },
+  {
+    "query": "能男技师女技师随便选吗？",
+    "expected_category": "技师信息",
+    "expected_keywords": ["男女技师", "资格证书", "按喜好选择"],
+    "expected_answer": "有专业的男女技师，均可按喜好选择，所有技师持相关资格证书。"
+  },
+  {
+    "query": "技师都有几年经验？靠谱吗？",
+    "expected_category": "技师信息",
+    "expected_keywords": ["3年以上", "定期培训"],
+    "expected_answer": "技师均有3年以上专业经验，定期接受培训以保证服务质量。"
+  },
+  {
+    "query": "预约了想取消怎么办？",
+    "expected_category": "预约政策",
+    "expected_keywords": ["提前2小时", "取消或更改"],
+    "expected_answer": "取消或更改预约需提前至少2小时通知，临时取消可能产生费用。"
+  },
+  {
+    "query": "迟到了会怎样？",
+    "expected_category": "预约政策",
+    "expected_keywords": ["迟到15分钟", "自动取消"],
+    "expected_answer": "迟到15分钟以上视为自动取消预约，需重新预约。"
+  },
+  {
+    "query": "晚上7点去要不要提前预约？",
+    "expected_category": "预约政策",
+    "expected_keywords": ["高峰期", "提前一天"],
+    "expected_answer": "18点到21点为高峰期，建议至少提前一天预约。"
+  },
+  {
+    "query": "充500块钱有什么优惠？",
+    "expected_category": "会员服务",
+    "expected_keywords": ["送50元", "预约优先权", "生日优惠"],
+    "expected_answer": "充值500元送50元，会员享受预约优先权和生日优惠。"
+  },
+  {
+    "query": "会员积分怎么用？",
+    "expected_category": "会员服务",
+    "expected_keywords": ["1积分", "1000分", "免费足底按摩"],
+    "expected_answer": "消费1元累计1积分，每满1000分可兑换一次免费足底按摩。"
+  },
+  {
+    "query": "能用微信或者支付宝付钱吗？",
+    "expected_category": "支付方式",
+    "expected_keywords": ["微信支付", "支付宝", "银联", "现金"],
+    "expected_answer": "支持微信支付、支付宝、银联刷卡和现金支付。"
+  },
+  {
+    "query": "能不能开发票报销？",
+    "expected_category": "支付方式",
+    "expected_keywords": ["电子发票", "企业抬头", "邮箱"],
+    "expected_answer": "结账时告知前台即可开具电子发票，支持企业抬头，当天发送到预留邮箱。"
+  },
+  {
+    "query": "做完不满意可以投诉吗？",
+    "expected_category": "售后与投诉",
+    "expected_keywords": ["48小时内", "免费复查"],
+    "expected_answer": "服务结束后48小时内联系我们，可安排免费复查或重新服务。"
+  },
+  {
+    "query": "有什么投诉渠道？",
+    "expected_category": "售后与投诉",
+    "expected_keywords": ["前台电话", "意见箱", "公众号"],
+    "expected_answer": "可通过前台电话、店内意见箱、公众号留言投诉，48小时内反馈。"
+  },
+  {
+    "query": "你们最近有什么优惠活动吗？",
+    "expected_category": "促销活动",
+    "expected_keywords": ["新客体验", "8.5折"],
+    "expected_answer": "本月新客首次到店全部项目8.5折，活动截止到本月底。"
+  },
+  {
+    "query": "第一次去要做哪些准备？",
+    "expected_category": "到店流程",
+    "expected_keywords": ["前台登记", "更换拖鞋", "无需自带"],
+    "expected_answer": "到店流程：前台登记核销 → 更换一次性用品 → 技师引导进入理疗房 → 沟通需求 → 开始服务 → 结账。无需自带物品。"
+  },
+  {
+    "query": "怀孕了可以做按摩吗？",
+    "expected_category": "注意事项",
+    "expected_keywords": ["孕期舒缓服务", "医生证明"],
+    "expected_answer": "孕期顾客需医生开具适宜证明，由有资质的技师提供专门的孕期舒缓服务。"
+  },
+  {
+    "query": "什么情况不能做推拿？",
+    "expected_category": "注意事项",
+    "expected_keywords": ["心脑血管疾病", "皮肤病急性期", "孕期", "醉酒"],
+    "expected_answer": "严重心脑血管疾病、皮肤病急性发作期、孕期、术后恢复期、醉酒状态不建议推拿。"
+  },
+  {
+    "query": "刚吃完饭能去按摩吗？",
+    "expected_category": "注意事项",
+    "expected_keywords": ["餐后1小时", "不建议", "消化"],
+    "expected_answer": "餐后一小时内不建议全身推拿，建议餐后休息1.5小时再享受服务。"
+  },
+  {
+    "query": "按摩完有什么要注意的？",
+    "expected_category": "注意事项",
+    "expected_keywords": ["多喝温水", "避免剧烈运动", "保暖"],
+    "expected_answer": "服务结束后建议多喝温水，避免立即剧烈运动，当天注意保暖。"
+  },
+  {
+    "query": "预约的技师临时请假了怎么办？",
+    "expected_category": "常见问题",
+    "expected_keywords": ["同等级别技师", "改期", "不额外收费"],
+    "expected_answer": "会安排同等级别技师，或选择改期，均不额外收费。"
+  },
+  {
+    "query": "能约技师吗？我想点名一个熟悉的师傅",
+    "expected_category": "技师信息",
+    "expected_keywords": ["指定技师", "提前2小时"],
+    "expected_answer": "可以指定熟悉的技师，需提前2小时预约以免档期已满。"
+  },
+  {
+    "query": "你们那招技师吗？",
+    "expected_category": "招聘信息",
+    "expected_keywords": ["招聘", "资格证书", "2年经验"],
+    "expected_answer": "长期招聘专业技师，要求持按摩师资格证书并有2年以上从业经验。"
+  },
+  {
+    "query": "组合套餐比单点便宜吗？",
+    "expected_category": "服务项目",
+    "expected_keywords": ["组合", "套餐", "170元", "优惠10元"],
+    "expected_answer": "肩颈推拿加足底按摩的组合套餐共75分钟170元，比单项分开购买优惠10元。",
+    "difficulty": "medium"
+  },
+  {
+    "query": "精油开背多少钱一次？",
+    "expected_category": "服务项目",
+    "expected_keywords": ["精油开背", "150元", "50分钟"],
+    "expected_answer": "精油开背50分钟150元，使用天然精油配合专业手法。",
+    "difficulty": "easy"
+  },
+  {
+    "query": "头部刮痧能缓解头痛吗？",
+    "expected_category": "服务项目",
+    "expected_keywords": ["头部", "刮痧", "60元", "头痛"],
+    "expected_answer": "头部刮痧20分钟60元，通过头部经络梳理缓解头痛和精神疲劳。",
+    "difficulty": "medium"
+  },
+  {
+    "query": "肩颈推拿到底有什么效果？",
+    "expected_category": "服务介绍",
+    "expected_keywords": ["颈椎", "肩膀", "僵硬", "电脑"],
+    "expected_answer": "肩颈推拿针对颈椎和肩部问题，缓解颈椎疼痛、肩膀僵硬，适合长期用电脑的人群。",
+    "difficulty": "medium"
+  },
+  {
+    "query": "多久做一次推拿比较合适？",
+    "expected_category": "服务介绍",
+    "expected_keywords": ["每周一次", "频率", "保健"],
+    "expected_answer": "建议每周一次，坚持一段时间对缓解慢性肌肉劳损有帮助。",
+    "difficulty": "hard"
+  },
+  {
+    "query": "店里一共有几位技师？",
+    "expected_category": "技师信息",
+    "expected_keywords": ["12名", "男技师7名", "女技师5名"],
+    "expected_answer": "店内现有技师12名，其中男技师7名、女技师5名。",
+    "difficulty": "easy"
+  },
+  {
+    "query": "预约成功后会提醒我吗？",
+    "expected_category": "预约政策",
+    "expected_keywords": ["短信提醒", "前1小时"],
+    "expected_answer": "预约成功后会在预约时间前1小时发送短信提醒。",
+    "difficulty": "medium"
+  },
+  {
+    "query": "坐轮椅能进你们店吗？",
+    "expected_category": "门店信息",
+    "expected_keywords": ["无障碍通道", "轮椅"],
+    "expected_answer": "门店设有无障碍通道，轮椅可直达接待区和部分理疗房间。",
+    "difficulty": "medium"
+  },
+  {
+    "query": "我对精油过敏还能做开背吗？",
+    "expected_category": "服务介绍",
+    "expected_keywords": ["过敏", "提前告知", "无精油"],
+    "expected_answer": "有过敏史请在预约时提前告知，我们会更换为无精油方案。",
+    "difficulty": "hard"
+  },
+  {
+    "query": "按的时候太痛了可以让他轻一点吗？",
+    "expected_category": "服务介绍",
+    "expected_keywords": ["力度", "调整", "暂停服务"],
+    "expected_answer": "推拿过程中如有不适可随时告知技师，会调整力度或暂停服务。",
+    "difficulty": "hard"
+  }
+]
