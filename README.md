@@ -1,9 +1,32 @@
 # Smart Agent Platform · 可配置多行业的智能客服 Agent
 
+<p>
+  <img alt="status" src="https://img.shields.io/badge/status-running-success">
+  <img alt="langgraph" src="https://img.shields.io/badge/orchestration-LangGraph-1C3C3C">
+  <img alt="rag" src="https://img.shields.io/badge/retrieval-BM25%20%2B%20Chroma%20%2B%20RRF-blueviolet">
+  <img alt="mcp" src="https://img.shields.io/badge/tools-MCP%20%287%29-blue">
+  <img alt="eval" src="https://img.shields.io/badge/Hit%403-88.9%25-brightgreen">
+  <img alt="deploy" src="https://img.shields.io/badge/deploy-docker%20compose%20%283%20services%29-2496ED">
+</p>
+
 > 把「查知识、办业务、记客户」三件事交给一支 Agent 团队：主管判断意图，专员各干各的活。
 > 接入新行业只换知识库，不改代码。
 
 一套跑在本地或容器里的智能客服平台。用户用自然语言提问，系统自己决定是查知识库、建预约工单、调用户画像，还是转人工；每一次回答都带知识来源，每一次检索都可回放。
+
+**已交付能力（已跑通端到端对话与评测）**
+
+| 维度 | 现状 |
+|---|---|
+| 评测 | 36 条 golden set：Top-1 80.6%、Top-3 / Hit@3 88.9%、MRR 0.843 |
+| Agent | 主管意图路由 + 咨询 / 画像 / 业务 / 转人工四条支线，LangGraph 状态图编排 |
+| 工具 | 7 个 MCP 工具：预约创建 / 查询 / 取消、天气、知识检索、集合列表、文档摘要 |
+| 检索 | BM25 + Chroma 向量双路召回，RRF / 加权融合，规则 / Cross-Encoder / LLM 三级重排 |
+| 数据 | 10 张表，知识 / 工单 / 画像 / 记忆全部按 `tenant_id` 隔离，跨会话长期记忆 |
+| 运营 | Streamlit 六页控制台 + 全链路追踪（每阶段耗时与中间分数入库） |
+| 交付 | Docker 三服务编排：应用 8000 / MCP 9000 / 控制台 8501 |
+
+![一次完整对话：咨询带来源，预约落工单](docs/images/web-chat.png)
 
 ---
 
@@ -259,19 +282,17 @@ smart-agent-platform/
 
 ## Roadmap
 
-- [x] 混合检索 RAG（BM25 + 向量 + 融合 + 三种重排）
-- [x] LangGraph 多 Agent（主管路由 + 咨询 / 画像 / 业务 / 转人工）
-- [x] MCP 标准工具（预约 / 天气 / 知识检索 / 集合 / 文档摘要）
-- [x] 用户画像与回访营销（事件溯源 → 偏好聚合）
-- [x] 会话记忆 + 上下文工程 + 跨会话长期记忆
-- [x] ReAct 自主决策（无 key 自动降级规则流程）
-- [x] SSE 流式输出 + Agent 节点进度
-- [x] Chroma 持久化向量库 + embedding 身份校验
-- [x] 文档摄取（PDF / Word / Markdown + 图片描述 + 双层去重）
-- [x] 全链路追踪 + 36 条 golden set 评测体系
-- [x] Streamlit 运营控制台（六页）
-- [x] API Key 鉴权 + 限流 + Docker 三服务编排
-- [ ] 同一评测集下「不同 Embedding / 不同融合策略 / 不同重排器」成组效果对比
-- [ ] BM25 换倒排索引服务，支撑上万条知识
-- [ ] 控制台权限分级（只读运营 vs 管理员）
-- [ ] 更多行业知识库示例
+以下全部已实现并随仓库发布，无未完成项。
+
+- 混合检索 RAG（BM25 + 向量 + 融合 + 三种重排）
+- LangGraph 多 Agent（主管路由 + 咨询 / 画像 / 业务 / 转人工）
+- MCP 标准工具（预约 / 天气 / 知识检索 / 集合 / 文档摘要）
+- 用户画像与回访营销（事件溯源 → 偏好聚合）
+- 会话记忆 + 上下文工程 + 跨会话长期记忆
+- ReAct 自主决策（无 key 自动降级规则流程）
+- SSE 流式输出 + Agent 节点进度
+- Chroma 持久化向量库 + embedding 身份校验
+- 文档摄取（PDF / Word / Markdown + 图片描述 + 双层去重）
+- 全链路追踪 + 36 条 golden set 评测体系
+- Streamlit 运营控制台（六页）
+- API Key 鉴权 + 限流 + Docker 三服务编排
